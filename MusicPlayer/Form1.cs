@@ -17,10 +17,34 @@ namespace MusicPlayer
     {
         int width = 640;
         int height = 480;
+
         Mat frame;
         VideoCapture capture;
         Bitmap bitmap;
         Graphics graphics;
+
+        int ChangekLikelihood(string s)
+        {
+            int i = 0;
+            switch (s)
+            {
+                case "VeryLikely":
+                    i += 4;
+                    break;
+                case "Likely":
+                    i += 3;
+                    break;
+                case "Possible":
+                    i += 2;
+                    break;
+                case "Unlikely":
+                    i += 1;
+                    break;
+                default:
+                    break;
+            }
+            return i;
+        }
 
         public Form1()
         {
@@ -58,6 +82,11 @@ namespace MusicPlayer
 
         private void StartButton_Click(object sender, EventArgs e)
         {
+            int joy = 0;
+            int anger = 0;
+            int sorrow = 0;
+            int surprise = 0;
+            string s;
             frame.SaveImage(@"C:\HackU2020\cap.png");
             using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
             {
@@ -66,12 +95,26 @@ namespace MusicPlayer
             }
             var client = ImageAnnotatorClient.Create();
             var cv_image = Google.Cloud.Vision.V1.Image.FromFile(@"C:\HackU2020\cap.png");
-            var response = client.DetectLabels(cv_image);
-            foreach (var label in response)
+            var response = client.DetectFaces(cv_image);
+            int count = 1;
+            foreach (var faceAnnotation in response)
             {
-                Console.WriteLine(label.Description);
+                // "VERY_LIKELY","LIKELY","POSSIBLE","UNLIKELY","VERY_UNLIKELY","UNKNOWN"の6段階評価
+                Console.WriteLine("Face {0}:", count++);
+                s = System.Convert.ToString(faceAnnotation.JoyLikelihood);
+                Console.WriteLine("  Joy: {0}", s);
+                joy = ChangekLikelihood(s);
+                s = System.Convert.ToString(faceAnnotation.AngerLikelihood);
+                Console.WriteLine("  Anger: {0}", s);
+                anger = ChangekLikelihood(s);
+                s = System.Convert.ToString(faceAnnotation.SorrowLikelihood);
+                Console.WriteLine("  Sorrow: {0}", s);
+                sorrow = ChangekLikelihood(s);
+                s = System.Convert.ToString(faceAnnotation.SurpriseLikelihood);
+                Console.WriteLine("  Surprise: {0}", s);
+                surprise = ChangekLikelihood(s);
             }
-            Console.WriteLine();
+            Console.WriteLine("{0} {1} {2} {3}", joy, anger, sorrow, surprise);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
