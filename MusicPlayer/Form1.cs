@@ -8,13 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenCvSharp;
+using Google.Cloud.Vision.V1;
+
 
 namespace MusicPlayer
 {
     public partial class Form1 : Form
     {
-        int WIDTH = 640;
-        int HEIGHT = 480;
+        int width = 640;
+        int height = 480;
         Mat frame;
         VideoCapture capture;
         Bitmap bitmap;
@@ -31,11 +33,11 @@ namespace MusicPlayer
                 MessageBox.Show("camera was not found!");
                 this.Close();
             }
-            capture.FrameWidth = WIDTH;
-            capture.FrameHeight = HEIGHT;
+            capture.FrameWidth = width;
+            capture.FrameHeight = height;
 
             // 取得先のMat作成(CV_8UC3 : 3個のCV_8U(符号なし8bit整数)カラー画像の初期値)
-            frame = new Mat(HEIGHT, WIDTH, MatType.CV_8UC3);
+            frame = new Mat(height, width, MatType.CV_8UC3);
 
             // 表示用のBitmap作成
             // (Format24bppRgb : 1ピクセルあたり24bitの形式であることを指定
@@ -56,12 +58,20 @@ namespace MusicPlayer
 
         private void StartButton_Click(object sender, EventArgs e)
         {
-            frame.SaveImage(@"\img\cap.png");
-            using(Mat cap = new Mat(@"\img\cap.png"))
+            frame.SaveImage(@"C:\HackU2020\cap.png");
+            using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
             {
                 // 保存された画像の出力
                 Cv2.ImShow("test1", frame);
             }
+            var client = ImageAnnotatorClient.Create();
+            var cv_image = Google.Cloud.Vision.V1.Image.FromFile(@"C:\HackU2020\cap.png");
+            var response = client.DetectLabels(cv_image);
+            foreach (var label in response)
+            {
+                Console.WriteLine(label.Description);
+            }
+            Console.WriteLine();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
