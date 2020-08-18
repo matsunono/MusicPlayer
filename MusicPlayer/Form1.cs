@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenCvSharp;
 using Google.Cloud.Vision.V1;
+using WMPLib;
 
 
 namespace MusicPlayer
@@ -19,10 +20,17 @@ namespace MusicPlayer
         int width = 640;
         int height = 480;
 
+        bool music_flag = false;
+
         Mat frame;
         VideoCapture capture;
         Bitmap bitmap;
         Graphics graphics;
+
+        static AxWMPLib.AxWindowsMediaPlayer wplayer;
+        private string[] play_list;
+        private int list_num;
+        private int now_num = 0;
 
         int ChangekLikelihood(string s)
         {
@@ -81,28 +89,12 @@ namespace MusicPlayer
 
         void PlayMusic(string s)
         {
-            WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
-            // 音楽ディレクトリの指定
-            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"C:\HackU2020\Music\");
-
-            System.IO.FileInfo[] files = dir.GetFiles();
-
-            WMPLib.IWMPPlaylist playlist = wplayer.playlistCollection.newPlaylist("myplaylist");
-
-            // プレイリストにディレクトリ内のMP3ファイルを追加する
-            foreach (System.IO.FileInfo file in files)
-            {
-                WMPLib.IWMPMedia media;
-                media = wplayer.newMedia(file.FullName);
-                playlist.appendItem(media);
-            }
-
-            wplayer.currentPlaylist = playlist;
             // numerUpDown1の値を音量に反映する(0~100)
-            wplayer.settings.volume = Convert.ToInt32(numericUpDown1.Value);
-//            wplayer.settings.setMode("loop", true);
+            wplayer.settings.volume = 50; // 修正必要
             wplayer.settings.setMode("shuffle", true);
-            wplayer.controls.play();
+            wplayer.URL = play_list[now_num];
+            music_flag = true;
+            timer1.Start();
         }
 
         public Form1()
@@ -228,9 +220,22 @@ namespace MusicPlayer
             graphics.DrawImage(bitmap, 0, 0, frame.Cols/2, frame.Rows/2);
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            // 音量の調整
+            play_list = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+            list_num = play_list.Length;
+
+            // 動画プレイヤーの設定
+            wplayer = axWindowsMediaPlayer1;
+            wplayer.settings.autoStart = false;	// 自動再生無効
+            wplayer.Ctlenabled = false;            // ダブルクリックによるフルスクリーン出力を無効化
+            wplayer.enableContextMenu = false;     // 右クリックによるコンテキストメニューの出力を無効化
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+            wplayer.Ctlcontrols.play();
         }
     }
 }
