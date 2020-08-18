@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,21 +30,76 @@ namespace MusicPlayer
             switch (s)
             {
                 case "VeryLikely":
-                    i += 4;
+                    i = 4;
                     break;
                 case "Likely":
-                    i += 3;
+                    i = 3;
                     break;
                 case "Possible":
-                    i += 2;
+                    i = 2;
                     break;
                 case "Unlikely":
-                    i += 1;
+                    i = 1;
                     break;
                 default:
                     break;
             }
             return i;
+        }
+
+        void ChoiceMusic (int x, string s)
+        {
+            switch (s)
+            {
+                case "Joy":
+                    MessageBox.Show("Joy");
+                    PlayMusic(s);
+                    // joyフォルダの音楽をかける
+                    break;
+                case "Anger":
+                    MessageBox.Show("Anger");
+                    PlayMusic(s);
+                    // angerフォルダの音楽をかける
+                    break;
+                case "Sorrow":
+                    MessageBox.Show("Sorrow");
+                    PlayMusic(s);
+                    // sorrowフォルダの音楽をかける
+                    break;
+                case "Surprise":
+                    MessageBox.Show("Surprise");
+                    PlayMusic(s);
+                    // surpriseフォルダの音楽をかける
+                    break;
+                default:
+                    MessageBox.Show("None");
+                    // ランダムに音楽をかける
+                    PlayMusic(s);
+                    break;
+            }
+        }
+
+        void PlayMusic(string s)
+        {
+            WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
+            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"C:\HackU2020\Music\");
+
+            System.IO.FileInfo[] files = dir.GetFiles();
+
+            WMPLib.IWMPPlaylist playlist = wplayer.playlistCollection.newPlaylist("myplaylist");
+
+            foreach (System.IO.FileInfo file in files)
+            {
+                WMPLib.IWMPMedia media;
+                media = wplayer.newMedia(file.FullName);
+                playlist.appendItem(media);
+            }
+
+            wplayer.currentPlaylist = playlist;
+            wplayer.settings.volume = Convert.ToInt32(numericUpDown1.Value);
+            // wplayer.settings.setMode("loop", true);
+            wplayer.settings.setMode("shuffle", true);
+            wplayer.controls.play();
         }
 
         public Form1()
@@ -86,6 +142,8 @@ namespace MusicPlayer
             int anger = 0;
             int sorrow = 0;
             int surprise = 0;
+            int most_emovalue = 0;
+            string most_emotion = "";
             string s;
             frame.SaveImage(@"C:\HackU2020\cap.png");
             using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
@@ -103,18 +161,39 @@ namespace MusicPlayer
                 Console.WriteLine("Face {0}:", count++);
                 s = System.Convert.ToString(faceAnnotation.JoyLikelihood);
                 Console.WriteLine("  Joy: {0}", s);
-                joy = ChangekLikelihood(s);
+                joy += ChangekLikelihood(s);
+                if(joy > most_emovalue)
+                {
+                    most_emovalue = joy;
+                    most_emotion = "Joy";
+                }
                 s = System.Convert.ToString(faceAnnotation.AngerLikelihood);
                 Console.WriteLine("  Anger: {0}", s);
-                anger = ChangekLikelihood(s);
+                anger += ChangekLikelihood(s);
+                if (anger > most_emovalue)
+                {
+                    most_emovalue = anger;
+                    most_emotion = "Anger";
+                }
                 s = System.Convert.ToString(faceAnnotation.SorrowLikelihood);
                 Console.WriteLine("  Sorrow: {0}", s);
-                sorrow = ChangekLikelihood(s);
+                sorrow += ChangekLikelihood(s);
+                if (sorrow > most_emovalue)
+                {
+                    most_emovalue = sorrow;
+                    most_emotion = "Sorrow";
+                }
                 s = System.Convert.ToString(faceAnnotation.SurpriseLikelihood);
                 Console.WriteLine("  Surprise: {0}", s);
-                surprise = ChangekLikelihood(s);
+                surprise += ChangekLikelihood(s);
+                if (surprise > most_emovalue)
+                {
+                    most_emovalue = surprise;
+                    most_emotion = "Surprise";
+                }
             }
             Console.WriteLine("{0} {1} {2} {3}", joy, anger, sorrow, surprise);
+            ChoiceMusic(most_emovalue, most_emotion);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -143,6 +222,11 @@ namespace MusicPlayer
         {
             // bitmapを左上からフレームの端まで描画
             graphics.DrawImage(bitmap, 0, 0, frame.Cols/2, frame.Rows/2);
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            
         }
     }
 }
