@@ -52,27 +52,27 @@ namespace MusicPlayer
             switch (s)
             {
                 case "Joy":
-                    MessageBox.Show("Joy");
-                    PlayMusic(s);
+//                    MessageBox.Show("Joy");
                     // joyフォルダの音楽をかける
+                    PlayMusic(s);
                     break;
                 case "Anger":
-                    MessageBox.Show("Anger");
-                    PlayMusic(s);
+//                    MessageBox.Show("Anger");
                     // angerフォルダの音楽をかける
+                    PlayMusic(s);
                     break;
                 case "Sorrow":
-                    MessageBox.Show("Sorrow");
-                    PlayMusic(s);
+//                    MessageBox.Show("Sorrow");
                     // sorrowフォルダの音楽をかける
+                    PlayMusic(s);
                     break;
                 case "Surprise":
-                    MessageBox.Show("Surprise");
-                    PlayMusic(s);
+//                    MessageBox.Show("Surprise");
                     // surpriseフォルダの音楽をかける
+                    PlayMusic(s);
                     break;
                 default:
-                    MessageBox.Show("None");
+//                    MessageBox.Show("None");
                     // ランダムに音楽をかける
                     PlayMusic(s);
                     break;
@@ -82,12 +82,14 @@ namespace MusicPlayer
         void PlayMusic(string s)
         {
             WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
+            // 音楽ディレクトリの指定
             System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"C:\HackU2020\Music\");
 
             System.IO.FileInfo[] files = dir.GetFiles();
 
             WMPLib.IWMPPlaylist playlist = wplayer.playlistCollection.newPlaylist("myplaylist");
 
+            // プレイリストにディレクトリ内のMP3ファイルを追加する
             foreach (System.IO.FileInfo file in files)
             {
                 WMPLib.IWMPMedia media;
@@ -96,8 +98,9 @@ namespace MusicPlayer
             }
 
             wplayer.currentPlaylist = playlist;
+            // numerUpDown1の値を音量に反映する(0~100)
             wplayer.settings.volume = Convert.ToInt32(numericUpDown1.Value);
-            // wplayer.settings.setMode("loop", true);
+//            wplayer.settings.setMode("loop", true);
             wplayer.settings.setMode("shuffle", true);
             wplayer.controls.play();
         }
@@ -146,11 +149,12 @@ namespace MusicPlayer
             string most_emotion = "";
             string s;
             frame.SaveImage(@"C:\HackU2020\cap.png");
-            using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
-            {
-                // 保存された画像の出力
-                Cv2.ImShow("test1", frame);
-            }
+//            using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
+//            {
+//                // 保存された画像の出力
+//                Cv2.ImShow("test1", frame);
+//            }
+            // 事前に環境変数GOOGLE_APPLICATION_CREDENTIALSを設定しておく必要がある
             var client = ImageAnnotatorClient.Create();
             var cv_image = Google.Cloud.Vision.V1.Image.FromFile(@"C:\HackU2020\cap.png");
             var response = client.DetectFaces(cv_image);
@@ -226,7 +230,7 @@ namespace MusicPlayer
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            
+            // 音量の調整
         }
     }
 }
