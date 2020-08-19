@@ -91,7 +91,10 @@ namespace MusicPlayer
         {
             // numerUpDown1の値を音量に反映する(0~100)
             wplayer.settings.volume = trackBar1.Value; 
-            wplayer.settings.setMode("shuffle", true);
+//            wplayer.settings.setMode("shuffle", true);
+//            wplayer.settings.setMode("loop", true);
+            Random rand = new Random();
+            now_num = rand.Next(0, list_num);
             wplayer.URL = play_list[now_num];
             music_flag = true;
             timer1.Start();
@@ -241,6 +244,28 @@ namespace MusicPlayer
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             wplayer.settings.volume = trackBar1.Value;
+        }
+
+        private void axWindowsMediaPlayer1_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            switch (e.newState)
+            {
+                case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
+                    Random rand = new Random();
+                    now_num = rand.Next(0, list_num);
+                    wplayer.URL = play_list[now_num];
+                    music_flag = true;
+                    timer1.Start();
+                    break;
+
+                case (int)WMPLib.WMPPlayState.wmppsReady:
+                    //再生準備完了
+                    timer1.Start();
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }
