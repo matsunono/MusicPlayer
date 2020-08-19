@@ -90,7 +90,7 @@ namespace MusicPlayer
         void PlayMusic(string s)
         {
             // numerUpDown1の値を音量に反映する(0~100)
-            wplayer.settings.volume = 50; // 修正必要
+            wplayer.settings.volume = trackBar1.Value; 
             wplayer.settings.setMode("shuffle", true);
             wplayer.URL = play_list[now_num];
             music_flag = true;
@@ -229,13 +229,18 @@ namespace MusicPlayer
             wplayer = axWindowsMediaPlayer1;
             wplayer.settings.autoStart = false;	// 自動再生無効
             wplayer.Ctlenabled = false;            // ダブルクリックによるフルスクリーン出力を無効化
-            wplayer.enableContextMenu = false;     // 右クリックによるコンテキストメニューの出力を無効化
+//            wplayer.enableContextMenu = false;     // 右クリックによるコンテキストメニューの出力を無効化
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             timer1.Stop();
             wplayer.Ctlcontrols.play();
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            wplayer.settings.volume = trackBar1.Value;
         }
     }
 }
