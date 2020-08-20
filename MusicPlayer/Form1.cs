@@ -60,39 +60,45 @@ namespace MusicPlayer
             switch (s)
             {
                 case "Joy":
-//                    MessageBox.Show("Joy");
                     // joyフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Anger":
-//                    MessageBox.Show("Anger");
                     // angerフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Sorrow":
-//                    MessageBox.Show("Sorrow");
                     // sorrowフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Surprise":
-//                    MessageBox.Show("Surprise");
                     // surpriseフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 default:
-//                    MessageBox.Show("None");
                     // ランダムに音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
             }
         }
 
-        void PlayMusic(string s)
+        void PlayMusic()
         {
-            // numerUpDown1の値を音量に反映する(0~100)
-            wplayer.settings.volume = trackBar1.Value; 
-//            wplayer.settings.setMode("shuffle", true);
-//            wplayer.settings.setMode("loop", true);
+            // TrackBar1の値を音量に反映する(0~100)
+            wplayer.settings.volume = trackBar1.Value;
+            // TrackBar1の値を音楽のスピードに反映する(0.2~2.0)
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value) / 5;
+            // ランダムに音楽をかける
             Random rand = new Random();
             nowNum = rand.Next(0, listNum);
             wplayer.URL = playlist[nowNum];
@@ -225,9 +231,6 @@ namespace MusicPlayer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
-            listNum = playlist.Length;
-
             // 動画プレイヤーの設定
             wplayer = axWindowsMediaPlayer1;
             wplayer.settings.autoStart = false;	// 自動再生無効
@@ -252,6 +255,8 @@ namespace MusicPlayer
             {
                 case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
                     Random rand = new Random();
+                    trackBar2.Value = 5;
+                    // 次の曲を選ぶ(連続して同じ曲がかかることもある)
                     nowNum = rand.Next(0, listNum);
                     wplayer.URL = playlist[nowNum];
                     music_flag = true;
@@ -266,6 +271,12 @@ namespace MusicPlayer
                 default:
                     break;
             }
+        }
+
+        // 音楽のスピード調整
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value)/5;
         }
     }
 }
