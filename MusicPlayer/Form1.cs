@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenCvSharp;
 using Google.Cloud.Vision.V1;
+using WMPLib;
 
 
 namespace MusicPlayer
@@ -19,10 +20,17 @@ namespace MusicPlayer
         int width = 640;
         int height = 480;
 
+        bool music_flag = false;
+
         Mat frame;
         VideoCapture capture;
         Bitmap bitmap;
         Graphics graphics;
+
+        static AxWMPLib.AxWindowsMediaPlayer wplayer;
+        private string[] playlist;
+        private int listNum;
+        private int nowNum = 0;
 
         int ChangekLikelihood(string s)
         {
@@ -52,57 +60,50 @@ namespace MusicPlayer
             switch (s)
             {
                 case "Joy":
-//                    MessageBox.Show("Joy");
                     // joyフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Anger":
-//                    MessageBox.Show("Anger");
                     // angerフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Sorrow":
-//                    MessageBox.Show("Sorrow");
                     // sorrowフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 case "Surprise":
-//                    MessageBox.Show("Surprise");
                     // surpriseフォルダの音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
                 default:
-//                    MessageBox.Show("None");
                     // ランダムに音楽をかける
-                    PlayMusic(s);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    listNum = playlist.Length;
+                    PlayMusic();
                     break;
             }
         }
 
-        void PlayMusic(string s)
+        void PlayMusic()
         {
-            WMPLib.WindowsMediaPlayer wplayer = new WMPLib.WindowsMediaPlayer();
-            // 音楽ディレクトリの指定
-            System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(@"C:\HackU2020\Music\");
-
-            System.IO.FileInfo[] files = dir.GetFiles();
-
-            WMPLib.IWMPPlaylist playlist = wplayer.playlistCollection.newPlaylist("myplaylist");
-
-            // プレイリストにディレクトリ内のMP3ファイルを追加する
-            foreach (System.IO.FileInfo file in files)
-            {
-                WMPLib.IWMPMedia media;
-                media = wplayer.newMedia(file.FullName);
-                playlist.appendItem(media);
-            }
-
-            wplayer.currentPlaylist = playlist;
-            // numerUpDown1の値を音量に反映する(0~100)
-            wplayer.settings.volume = Convert.ToInt32(numericUpDown1.Value);
-//            wplayer.settings.setMode("loop", true);
-            wplayer.settings.setMode("shuffle", true);
-            wplayer.controls.play();
+            // TrackBar1の値を音量に反映する(0~100)
+            wplayer.settings.volume = trackBar1.Value;
+            // TrackBar1の値を音楽のスピードに反映する(0.2~2.0)
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value) / 5;
+            // ランダムに音楽をかける
+            Random rand = new Random();
+            nowNum = rand.Next(0, listNum);
+            wplayer.URL = playlist[nowNum];
+            music_flag = true;
+            timer1.Start();
         }
 
         public Form1()
@@ -228,9 +229,54 @@ namespace MusicPlayer
             graphics.DrawImage(bitmap, 0, 0, frame.Cols/2, frame.Rows/2);
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            // 音量の調整
+            // 動画プレイヤーの設定
+            wplayer = axWindowsMediaPlayer1;
+            wplayer.settings.autoStart = false;	// 自動再生無効
+            wplayer.Ctlenabled = false;            // ダブルクリックによるフルスクリーン出力を無効化
+//            wplayer.enableContextMenu = false;     // 右クリックによるコンテキストメニューの出力を無効化
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Stop();
+            wplayer.Ctlcontrols.play();
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            wplayer.settings.volume = trackBar1.Value;
+        }
+
+        private void axWindowsMediaPlayer1_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            switch (e.newState)
+            {
+                case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
+                    Random rand = new Random();
+                    trackBar2.Value = 5;
+                    // 次の曲を選ぶ(連続して同じ曲がかかることもある)
+                    nowNum = rand.Next(0, listNum);
+                    wplayer.URL = playlist[nowNum];
+                    music_flag = true;
+                    timer1.Start();
+                    break;
+
+                case (int)WMPLib.WMPPlayState.wmppsReady:
+                    //再生準備完了
+                    timer1.Start();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // 音楽のスピード調整
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value)/5;
         }
     }
 }
