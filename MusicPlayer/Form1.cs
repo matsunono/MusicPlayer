@@ -28,9 +28,9 @@ namespace MusicPlayer
         Graphics graphics;
 
         static AxWMPLib.AxWindowsMediaPlayer wplayer;
-        private string[] play_list;
-        private int list_num;
-        private int now_num = 0;
+        private string[] playlist;
+        private int listNum;
+        private int nowNum = 0;
 
         int ChangekLikelihood(string s)
         {
@@ -94,8 +94,8 @@ namespace MusicPlayer
 //            wplayer.settings.setMode("shuffle", true);
 //            wplayer.settings.setMode("loop", true);
             Random rand = new Random();
-            now_num = rand.Next(0, list_num);
-            wplayer.URL = play_list[now_num];
+            nowNum = rand.Next(0, listNum);
+            wplayer.URL = playlist[nowNum];
             music_flag = true;
             timer1.Start();
         }
@@ -225,8 +225,8 @@ namespace MusicPlayer
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            play_list = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
-            list_num = play_list.Length;
+            playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+            listNum = playlist.Length;
 
             // 動画プレイヤーの設定
             wplayer = axWindowsMediaPlayer1;
@@ -252,8 +252,8 @@ namespace MusicPlayer
             {
                 case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
                     Random rand = new Random();
-                    now_num = rand.Next(0, list_num);
-                    wplayer.URL = play_list[now_num];
+                    nowNum = rand.Next(0, listNum);
+                    wplayer.URL = playlist[nowNum];
                     music_flag = true;
                     timer1.Start();
                     break;
