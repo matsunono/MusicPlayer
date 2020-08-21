@@ -96,8 +96,8 @@ namespace MusicPlayer
         {
             // TrackBar1の値を音量に反映する(0~100)
             wplayer.settings.volume = trackBar1.Value;
-            // TrackBar1の値を音楽のスピードに反映する(0.2~2.0)
-            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value) / 5;
+            // TrackBar1の値を音楽のスピードに反映する(0.1~5.0)
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value) / 10;
             // ランダムに音楽をかける
             Random rand = new Random();
             nowNum = rand.Next(0, listNum);
@@ -150,11 +150,6 @@ namespace MusicPlayer
             string most_emotion = "";
             string s;
             frame.SaveImage(@"C:\HackU2020\cap.png");
-//            using(Mat cap = new Mat(@"C:\HackU2020\cap.png"))
-//            {
-//                // 保存された画像の出力
-//                Cv2.ImShow("test1", frame);
-//            }
             // 事前に環境変数GOOGLE_APPLICATION_CREDENTIALSを設定しておく必要がある
             var client = ImageAnnotatorClient.Create();
             var cv_image = Google.Cloud.Vision.V1.Image.FromFile(@"C:\HackU2020\cap.png");
@@ -235,7 +230,6 @@ namespace MusicPlayer
             wplayer = axWindowsMediaPlayer1;
             wplayer.settings.autoStart = false;	// 自動再生無効
             wplayer.Ctlenabled = false;            // ダブルクリックによるフルスクリーン出力を無効化
-//            wplayer.enableContextMenu = false;     // 右クリックによるコンテキストメニューの出力を無効化
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -255,7 +249,7 @@ namespace MusicPlayer
             {
                 case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
                     Random rand = new Random();
-                    trackBar2.Value = 5;
+                    trackBar2.Value = 10;
                     // 次の曲を選ぶ(連続して同じ曲がかかることもある)
                     nowNum = rand.Next(0, listNum);
                     wplayer.URL = playlist[nowNum];
@@ -276,7 +270,7 @@ namespace MusicPlayer
         // 音楽のスピード調整
         private void trackBar2_Scroll(object sender, EventArgs e)
         {
-            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value)/5;
+            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value)/10;
         }
     }
 }
