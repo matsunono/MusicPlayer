@@ -22,6 +22,7 @@ namespace MusicPlayer
 
         bool music_flag = false;
 
+        Random rand = new Random();
         Mat frame;
         VideoCapture capture;
         Bitmap bitmap;
@@ -61,31 +62,31 @@ namespace MusicPlayer
             {
                 case "Joy":
                     // joyフォルダの音楽をかける
-                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music\Joy", "*.mp3", System.IO.SearchOption.AllDirectories);
                     listNum = playlist.Length;
                     PlayMusic();
                     break;
                 case "Anger":
                     // angerフォルダの音楽をかける
-                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music\Anger", "*.mp3", System.IO.SearchOption.AllDirectories);
                     listNum = playlist.Length;
                     PlayMusic();
                     break;
                 case "Sorrow":
                     // sorrowフォルダの音楽をかける
-                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music\Sorrow", "*.mp3", System.IO.SearchOption.AllDirectories);
                     listNum = playlist.Length;
                     PlayMusic();
                     break;
                 case "Surprise":
                     // surpriseフォルダの音楽をかける
-                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music\Surprise", "*.mp3", System.IO.SearchOption.AllDirectories);
                     listNum = playlist.Length;
                     PlayMusic();
                     break;
                 default:
                     // ランダムに音楽をかける
-                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music", "*.mp3", System.IO.SearchOption.AllDirectories);
+                    playlist = System.IO.Directory.GetFiles(@"C:\HackU2020\Music\Neutral", "*.mp3", System.IO.SearchOption.AllDirectories);
                     listNum = playlist.Length;
                     PlayMusic();
                     break;
@@ -94,12 +95,11 @@ namespace MusicPlayer
 
         void PlayMusic()
         {
+            // TrackBar1の値を1.0(等速)にする
+            trackBar2.Value = 10;
             // TrackBar1の値を音量に反映する(0~100)
             wplayer.settings.volume = trackBar1.Value;
-            // TrackBar1の値を音楽のスピードに反映する(0.1~5.0)
-            wplayer.settings.rate = Convert.ToDouble(trackBar2.Value) / 10;
             // ランダムに音楽をかける
-            Random rand = new Random();
             nowNum = rand.Next(0, listNum);
             wplayer.URL = playlist[nowNum];
             music_flag = true;
@@ -248,7 +248,6 @@ namespace MusicPlayer
             switch (e.newState)
             {
                 case (int)WMPLib.WMPPlayState.wmppsMediaEnded:
-                    Random rand = new Random();
                     trackBar2.Value = 10;
                     // 次の曲を選ぶ(連続して同じ曲がかかることもある)
                     nowNum = rand.Next(0, listNum);
