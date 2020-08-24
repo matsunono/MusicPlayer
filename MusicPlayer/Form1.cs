@@ -130,8 +130,8 @@ namespace MusicPlayer
                 System.Drawing.Imaging.PixelFormat.Format24bppRgb, frame.Data);
 
             // PictureBoxを出力サイズに合わせる
-            pictureBox1.Width = frame.Cols / 2;
-            pictureBox1.Height = frame.Rows / 2;
+            // pictureBox1.Width = frame.Cols / 2;
+            // pictureBox1.Height = frame.Rows / 2;
 
             // 描画用のGraphics作成
             graphics = pictureBox1.CreateGraphics();
