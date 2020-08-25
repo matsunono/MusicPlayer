@@ -14,7 +14,7 @@ HackU中部大学2020用の作品です
 
 ## 仕様
 **事前に環境変数GOOGLE_APPLICATION_CREDENTIALSを設定しておく必要があります** <br>
-参考ページ : " https://www.atmarkit.co.jp/ait/articles/1712/22/news033.html " <br>
+参考ページ : " https://www.atmarkit.co.jp/ait/articles/1712/22/news033.html " , " https://syncer.jp/cloud-vision-api "<br>
 秘密鍵/公開鍵のペアファイルは"C:\HackU2020"フォルダに入れておかないと、例外が発生するようです。 <br>
 
 **また、音楽ファイルは"C:\HackU2020\Music\Joy", "C:\HackU2020\Music\Anger", "C:\HackU2020\Music\Sorrow", "C:\HackU2020\Music\Surprise"フォルダに入れておくようにしてください** <br>
